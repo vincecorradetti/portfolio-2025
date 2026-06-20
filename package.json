@@ -7,7 +7,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "styles": "sass --watch src/styles/index.scss public/styles/index.css --style compressed"
+    "styles": "sass --watch src/styles/index.scss public/styles/index.css --style compressed",
+    "styles:ava": "sass --watch src/styles/pages/ava.scss public/styles/ava.css --style compressed"
   },
   "dependencies": {
     "astro": "^5.7.4"
