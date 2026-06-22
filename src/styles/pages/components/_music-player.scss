@@ -1,0 +1,17 @@
+aside:has(#music-player) {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 999;
+
+  button {
+    padding: 0;
+    border: 0;
+    background-color: transparent;
+    cursor: pointer;
+  }
+
+  button img {
+    pointer-events: none;
+  }
+}

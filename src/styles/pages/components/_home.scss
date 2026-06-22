@@ -1,0 +1,59 @@
+li:has(.story--home) {
+  background-color: rgb(50, 47, 47);
+}
+
+.story--home {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+}
+
+.story--home .decoration {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  width: fit-content;
+  transform: translate(0, 25%) rotate(45deg);
+  z-index: -1;
+}
+
+.story--home :is(.ava, .vince) {
+  position: relative;
+  top: -0.25rem;
+}
+
+.story--home .cats {
+  position: relative;
+  display: grid;
+  gap: 3rem;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.story--home .heart {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.story--home figure {
+  position: relative;
+}
+
+.story--home figure figcaption {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 25%);
+}
+
+.story--home .figure--pickles figcaption img {
+  transform: rotate(180deg);
+  z-index: -1;
+}

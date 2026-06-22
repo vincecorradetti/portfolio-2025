@@ -1,0 +1,28 @@
+li:has(.story--intro) {
+  background: var(--color-green);
+}
+
+.story--intro {
+  display: grid;
+  place-content: center;
+
+  h1 {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    font-size: 6rem;
+    color: var(--color-purple-300);
+  }
+
+  .decoration {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    width: fit-content;
+    transform: translate(0, 25%) rotate(45deg);
+    z-index: -1;
+  }
+}

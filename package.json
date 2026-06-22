@@ -11,7 +11,9 @@
     "styles:ava": "sass --watch src/styles/pages/ava.scss public/styles/ava.css --style compressed"
   },
   "dependencies": {
-    "astro": "^5.7.4"
+    "astro": "^5.7.4",
+    "gsap": "^3.15.0",
+    "swiper": "^12.2.0"
   },
   "devDependencies": {
     "sass": "^1.86.3"

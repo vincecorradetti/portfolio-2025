@@ -1,0 +1,18 @@
+li:has(.story--present) {
+  background-color: black;
+}
+
+.story--present {
+  display: grid;
+  place-content: center;
+
+  button#present {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+  }
+
+  button#present svg {
+    pointer-events: none;
+  }
+}

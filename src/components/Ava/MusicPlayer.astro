@@ -1,0 +1,134 @@
+<aside>
+  <audio src="/songs/i-do-not-care-for-the-winter-sun.mp3" id="music-player" loop></audio>
+  <button data-playing="true">
+    <img
+      src="/images/stardew-valley-music--on.webp"
+      alt="Click to turn on / off the music player"
+      width="60"
+    >
+  </button>
+</aside>
+
+<script>
+  // Assuming preserved order here
+  const SLIDES = [
+    {
+      element: ".story--present",
+      music: "/sounds/menu.mp3",
+    },
+    {
+      element: ".story--age",
+      music: "/sounds/age.mp3",
+    },
+    {
+      element: ".story--intro",
+      music: "/sounds/what-did-you-see.mp3",
+    }
+  ];
+
+  function initMusicPlayer() {
+    initMusicPlayerButton();
+    initSlideObserver(); // watch for slide changes and play slide song
+  }
+
+  function initSlideObserver() {
+    const target = document.querySelector(".swiper");
+    if (!target) return;
+
+    const config = {
+      attributes: true,
+      attributeFilter: ["class"],
+      attributeOldValue: true,
+      childList: true,
+      subtree: true,
+    };
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (isActiveSlide(mutation)) {
+          const klass = getActiveSlideClass(mutation);
+          playSlideMusic(klass);
+        }
+      });
+    });
+    observer.observe(target, config);
+  }
+
+  function initMusicPlayerButton() {
+    const audio = document.getElementById("music-player") as HTMLAudioElement;
+    const aside = audio?.closest("aside");
+    const button = aside?.querySelector("button");
+
+    button?.addEventListener("click", (event) => {
+      const isPlaying = button.getAttribute("data-playing");
+
+      if (isPlaying === "true") {
+        audio.pause();
+        button.setAttribute("data-playing", "false");
+      } else {
+        audio.play();
+        button.setAttribute("data-playing", "true");
+      }
+    });
+  }
+
+  function isActiveSlide(mutation: MutationRecord) {
+    const target = mutation.target as HTMLElement;
+    const oldValue = mutation.oldValue;
+
+    // bug: fires twice
+    return target.classList.contains("swiper-slide-active");
+      // && oldValue === "swiper-slide swiper-slide-next";
+  }
+
+  function getActiveSlideClass(mutation: MutationRecord) {
+    const target = mutation.target as HTMLElement;
+    const story = target?.querySelector(".story");
+    const klasses = story ? Array.from(story.classList) : [];
+    const storyClass = klasses?.find((klass) => klass.startsWith("story--"));
+    return `.${storyClass}`;
+  }
+
+  function playSlideMusic(klass: string) {
+    const slide = SLIDES.find((slide) => slide.element === klass);
+    const audio = document.getElementById("music-player") as HTMLAudioElement;
+    if (!slide || !audio) return;
+
+    audio.setAttribute("src", slide.music);
+    audio.play();
+  }
+
+  initMusicPlayer();
+  /*
+  ====
+  Old music player logic
+  ====
+  function initMusicPlayer() {
+    const SONGS = [
+      "/sounds/what-did-you-see.mp3",
+      "/sounds/i-do-not-care-for-the-winter-sun.mp3",
+    ];
+    let currentSongIndex = 0;
+    const player = document.getElementById("music-player");
+    const audio = player?.querySelector("audio");
+    const button = player?.querySelector("button");
+    if (!audio || !button) return;
+
+    button.addEventListener("click", (event) => {
+      const isPlaying = audio.getAttribute("data-playing") === "" ? true : false;
+
+      if (isPlaying) {
+        audio.pause();
+      } else {
+        audio.play();
+      }
+      audio.toggleAttribute("data-playing");
+    });
+
+    audio.addEventListener("ended", (event) => {
+      const nextSongIndex = currentSongIndex === SONGS.length - 1 ? 0 : currentSongIndex++;
+      audio.setAttribute("src", SONGS[nextSongIndex]);
+      audio.play();
+    });
+  };
+  **/
+</script>

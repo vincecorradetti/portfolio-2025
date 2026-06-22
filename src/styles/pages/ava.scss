@@ -1,3 +1,5 @@
+@use "components";
+
 :root {
   --color-yellow: yellow;
   --color-yellow-300: #ffff88;
@@ -34,21 +36,69 @@ p {
 
 body {
   position: relative;
-  padding: var(--padding-inline);
+  // padding: var(--padding-inline);
   font-family: Stardew Valley;
   font-size: 2rem;
   color: var(--color-yellow);
   background-size: cover;
-  background-image: url("/images/stardew-valley-background.png");
-  background-attachment: fixed;
+  // background-image: url("/images/stardew-valley-background.png");
+  // background-attachment: fixed;
 }
 
-body::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-color: rgb(0, 0, 0, 50%);
-  z-index: -1;
+// body::before {
+//   content: "";
+//   position: absolute;
+//   inset: 0;
+//   background-color: rgb(0, 0, 0, 50%);
+//   z-index: -1;
+// }
+
+li:has(.story) {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.story {
+  width: 100%;
+  height: 100%;
+}
+
+:is(.swiper-button-prev, .swiper-button-next) {
+  width: 12.5% !important;
+  height: 100% !important;
+  margin-top: 0 !important;
+  transform: translate(0, -50%) !important;
+  background: transparent;
+  border: none;
+
+  svg {
+    display: none;
+  }
+}
+
+.swiper-button-prev {
+  left: 0 !important;
+}
+
+.swiper-button-next {
+  right: 0 !important;
+}
+
+.swiper-pagination {
+  --swiper-pagination-top: 0;
+  --swiper-pagination-bottom: auto;
+  height: 12.5%;
+  background: linear-gradient(0deg,rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.15) 100%);
+
+  &-bullet {
+    --swiper-pagination-color: white;
+    --swiper-pagination-bullet-width: 2rem;
+    --swiper-pagination-bullet-height: 4px;
+    --swiper-pagination-bullet-border-radius: 1rem;
+  }
 }
 
 main, .section-divider {
@@ -71,10 +121,6 @@ h2 {
   font-size: 3.5rem;
 }
 
-section, .section-divider {
-  width: var(--body-width)
-}
-
 .blue {
   color: var(--color-blue);
 }
@@ -95,52 +141,6 @@ section, .section-divider {
   color: var(--color-green);
 }
 
-/* Hero section */
-#hero-section {
-  display: flex;
-  flex-direction: column;
-  justify-content: end;
-  min-height: 80dvh;
-}
-
-#hero-section :is(.ava, .vince) {
-  position: relative;
-  top: -0.25rem;
-}
-
-#hero-section .cats {
-  position: relative;
-  display: grid;
-  gap: 3rem;
-
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-#hero-section .heart {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-#hero-section figure {
-  position: relative;
-}
-
-#hero-section figure figcaption {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translate(-50%, 25%);
-}
-
-#hero-section .figure--pickles figcaption img {
-  transform: rotate(180deg);
-  z-index: -1;
-}
-
 .stardew--border > img {
   object-fit: cover;
   width: 100%;
@@ -154,114 +154,6 @@ section, .section-divider {
 
 .stardew--info > :is(img, span) {
   grid-area: 1 / 1;
-}
-
-/* Playlist review */
-#review-section {
-  color: var(--color-pink);
-}
-
-#review-section ol {
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
-  list-style-type: none;
-}
-
-#review-section li figure {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-
-  @media (max-width: 640px) {
-    flex-wrap: wrap;
-  }
-}
-
-#review-section figure .cherry {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-}
-
-#review-section figure .cherry {
-  animation: jump 1.5s infinite;
-}
-
-#review-section figcaption {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  width: 100%;
-}
-
-#review-section figcaption .metadata {
-  display: flex;
-  flex-direction: column;
-  max-width: 500px;
-}
-
-#review-section figcaption .song {
-  margin-bottom: 0.25rem;
-  font-size: 2.5rem;
-  line-height: 0.9;
-}
-
-#review-section figcaption .metadata :not(.song) {
-  color: var(--color-pink-100);
-}
-
-#review-section .stars {
-  display: flex;
-  gap: 0.25rem;
-  margin-bottom: 1rem;
-}
-
-#review-section figure > img.rotate.right {
-  transform: rotate(2.5deg);
-}
-
-#review-section ol li:nth-of-type(even) {
-  figure > img {
-    transform: rotate(1deg);
-  }
-
-  .metadata {
-    transform: rotate(-1deg);
-  }
-
-  .stardew--dialogue {
-    position: relative;
-    right: -2rem;
-  }
-}
-
-#review-section ol li:nth-of-type(odd) {
-  figure > img {
-    transform: rotate(-1deg);
-  }
-
-  .metadata {
-    transform: rotate(1deg);
-  }
-
-  .stardew--dialogue {
-    position: relative;
-    right: 2rem;
-  }
-}
-
-#review-section h3 {
-  max-width: 40ch;
-  margin-top: 6rem;
-  margin-inline: auto;
-  font-size: 3rem;
-  line-height: 1;
-  text-align: center;
-  color: var(--color-green);
 }
 
 .stardew--dialogue {
@@ -301,22 +193,27 @@ section, .section-divider {
   }
 }
 
-/* Music player */
-#music-player {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-}
+/* Thanks section */
+#thanks-section {
+  h2 {
+    max-width: 40ch;
+    margin-inline: auto;
+    font-size: 3rem;
+    line-height: 0.9;
+  }
+  
+  .section-divider--hearts {
+    gap: 1rem;
+    margin-block: 2.5rem;
 
-#music-player button {
-  padding: 0;
-  border: 0;
-  background-color: transparent;
-  cursor: pointer;
-}
+    &:first-of-type {
+      margin-top: 10rem;
+    }
 
-#music-player button img {
-  pointer-events: none;
+    &:last-of-type {
+      margin-bottom: 10rem;
+    }
+  } 
 }
 
 /* Utility classes */
@@ -336,11 +233,6 @@ section, .section-divider {
   display: flex;
   justify-content: center;
   margin-block: 5rem;
-
-  &--hearts {
-    gap: 1rem;
-    margin-block: 5rem 2.5rem;
-  }
 
   @media (max-width: 640px) {
     img:not(:first-of-type) {

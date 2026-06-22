@@ -1,0 +1,106 @@
+.story--playlist {
+  color: var(--color-pink);
+}
+
+.story--playlist ol {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  list-style-type: none;
+}
+
+.story--playlist li figure {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+
+  @media (max-width: 640px) {
+    flex-wrap: wrap;
+  }
+}
+
+.story--playlist figure .cherry {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.story--playlist figure .cherry {
+  animation: jump 1.5s infinite;
+}
+
+.story--playlist figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+}
+
+.story--playlist figcaption .metadata {
+  display: flex;
+  flex-direction: column;
+  max-width: 500px;
+}
+
+.story--playlist figcaption .song {
+  margin-bottom: 0.25rem;
+  font-size: 2.5rem;
+  line-height: 0.9;
+}
+
+.story--playlist figcaption .metadata :not(.song) {
+  color: var(--color-pink-100);
+}
+
+.story--playlist .stars {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.story--playlist figure > img.rotate.right {
+  transform: rotate(2.5deg);
+}
+
+.story--playlist ol li:nth-of-type(even) {
+  figure > img {
+    transform: rotate(1deg);
+  }
+
+  .metadata {
+    transform: rotate(-1deg);
+  }
+
+  .stardew--dialogue {
+    position: relative;
+    right: -2rem;
+  }
+}
+
+.story--playlist ol li:nth-of-type(odd) {
+  figure > img {
+    transform: rotate(-1deg);
+  }
+
+  .metadata {
+    transform: rotate(1deg);
+  }
+
+  .stardew--dialogue {
+    position: relative;
+    right: 2rem;
+  }
+}
+
+.story--playlist h3 {
+  max-width: 40ch;
+  margin-top: 6rem;
+  margin-inline: auto;
+  font-size: 3rem;
+  line-height: 1;
+  text-align: center;
+  color: var(--color-green);
+}
