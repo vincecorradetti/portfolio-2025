@@ -10,9 +10,15 @@ li:has(.story--age) {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    margin-bottom: 0;
     font-size: 40vw;
+    line-height: 0.6;
     color: var(--color-purple-300);
     // transform: rotate(-22.5deg);
+  }
+
+  h1 > div {
+    font-size: 7vw;
   }
 
   .decoration {

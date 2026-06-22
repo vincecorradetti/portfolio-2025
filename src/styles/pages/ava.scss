@@ -53,6 +53,10 @@ body {
 //   z-index: -1;
 // }
 
+body:has(.swiper-slide-active > .story--age) {
+  background-color: black;
+}
+
 li:has(.story) {
   position: relative;
   display: grid;

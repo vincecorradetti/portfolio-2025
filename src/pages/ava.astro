@@ -24,7 +24,7 @@ import MusicPlayer from "../components/Ava/MusicPlayer.astro";
 		<meta property="og:type" content="website">
 		<meta property="og:title" content="Vince Corradetti | UI Engineer">
 		<meta property="og:description" content="I'm Vince! A super passionate engineer experienced in building marketing & e-commerce sites. I believe the web should be fun and accessible for all!">
-		<meta property="og:image" content="https://vincecorradetti.com/images/og.png">
+		<meta property="og:image" content="https://vincecorradetti.com/images/gift-og.png">
 
 		<!-- Twitter Meta Tags -->
 		<meta name="twitter:card" content="summary_large_image">
@@ -32,7 +32,7 @@ import MusicPlayer from "../components/Ava/MusicPlayer.astro";
 		<meta property="twitter:url" content="https://vincecorradetti.com">
 		<meta name="twitter:title" content="Vince Corradetti | UI Engineer">
 		<meta name="twitter:description" content="I'm Vince! A super passionate engineer experienced in building marketing & e-commerce sites. I believe the web should be fun and accessible for all!">
-		<meta name="twitter:image" content="https://vincecorradetti.com/images/og.png">
+		<meta name="twitter:image" content="https://vincecorradetti.com/images/gift-og.png">
     <meta name="robots" content="noindex, nofollow" />
 
 		<link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
@@ -43,7 +43,7 @@ import MusicPlayer from "../components/Ava/MusicPlayer.astro";
 		<link rel="manifest" href="/favicon/site.webmanifest" />
 
 		<link rel="stylesheet" href="/styles/ava.css">
-		<title>Ava & Vince's Site!!</title>
+		<title>Happy Birthday Ava!!</title>
 	</head>
 	<body>
 		<main class="swiper">
@@ -65,6 +65,7 @@ import MusicPlayer from "../components/Ava/MusicPlayer.astro";
 </html>
 
 <script>
+  import { gsap } from "gsap";
   import Swiper from "swiper";
   import { Navigation, Pagination, EffectFade } from "swiper/modules";
 
@@ -72,6 +73,8 @@ import MusicPlayer from "../components/Ava/MusicPlayer.astro";
     const swiper = new Swiper(".swiper", {
       modules: [Navigation, Pagination, EffectFade],
       slidesPerView: 1,
+      noSwiping: true,
+      noSwipingClass: "swiper-slide",
       navigation: {
         prevEl: ".swiper-button-prev",
         nextEl: ".swiper-button-next",
@@ -82,9 +85,53 @@ import MusicPlayer from "../components/Ava/MusicPlayer.astro";
         clickable: true,
       },
     });
+
+    return swiper;
   }
 
-  initCarousel();
+  function initGsapAnimations(swiper: Swiper) {
+    swiper.on("slideChangeTransitionStart", () => {
+      const slide = swiper.slides[swiper.activeIndex];
+      const klass = getActiveSlideClass(slide);
+
+      switch(klass) {
+        case ".story--age":
+          playAgeStory(slide);
+          break;
+        default:
+          break;
+      }
+    });
+  }
+
+  function playAgeStory(slide: HTMLElement) {
+    const hasPlayed = slide.getAttribute("data-played-animation");
+    if (hasPlayed === "true") return;
+
+    gsap.fromTo(
+      slide,
+      {
+        clipPath: "circle(5% at 50% 50%)"
+      },
+      {
+        clipPath: "circle(100% at 50% 50%)",
+        duration: 0.75,
+        ease: "power4.in"
+      }
+    );
+    slide.setAttribute("data-played-animation", "true");
+  }
+
+  // duplicated in `MusicPlayer.astro`
+  function getActiveSlideClass(slide: HTMLElement) {
+    const story = slide?.querySelector(".story");
+    const klasses = story ? Array.from(story.classList) : [];
+    const storyClass = klasses?.find((klass) => klass.startsWith("story--"));
+    return `.${storyClass}`;
+  }
+
+  const swiper = initCarousel();
+  initGsapAnimations(swiper);
 </script>
 
 <!-- <section id="thanks-section" aria-labelledby="thanks-title">
