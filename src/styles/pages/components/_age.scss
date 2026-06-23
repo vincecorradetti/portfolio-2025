@@ -1,5 +1,5 @@
 li:has(.story--age) {
-  background: var(--color-green);
+  background: var(--color-orange);
 }
 
 .story--age {
@@ -11,17 +11,26 @@ li:has(.story--age) {
     flex-direction: column;
     gap: 1rem;
     margin-bottom: 0;
-    font-size: 40vw;
     line-height: 0.6;
-    color: var(--color-purple-300);
-    // transform: rotate(-22.5deg);
+    color: var(--color-yellow-300);
   }
 
-  h1 > div {
+  h1 > .age {
+    font-size: 40vw;
+  }
+
+  h1 > .years {
     font-size: 7vw;
   }
 
-  .decoration {
+  .decoration--circle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-25%, -25%);
+  }
+
+  .decoration--circles {
     position: absolute;
     bottom: 0;
     right: 0;
