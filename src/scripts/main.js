@@ -5,27 +5,91 @@ import { Navigation, Pagination } from "swiper/modules";
 class StoryController {
   #carousel;
   #currentStory;
+  #stories = {
+    ".story--present": {
+      name: "story--present",
+      enter: () => {},
+      exit: () => {},
+      complete: () => {},
+    },
+    ".story--age": {
+      name: "story--age",
+      enter: () => this.#enterAgeStory(),
+      exit: () => this.#exitAgeStory(),
+      complete: () => this.#completeAgeStory(),
+    },
+    ".story--intro": {
+      name: "story--intro",
+      enter: () => {},
+      exit: () => {},
+      complete: () => {},
+    }
+  };
 
   constructor(carousel) {
     this.#carousel = carousel;
+    this.#carousel.nextButton.addEventListener("click", () => this.next());
+    this.#carousel.previousButton.addEventListener("click", () => this.previous());
+    this.#currentStory = this.#setCurrentStory(this.#carousel.activeSlideClass);
+  };
 
-    this.#carousel.on("slideChangeTransitionStart", async () => {
-      const activeSlideClass = this.#carousel.activeSlideClass;
-      this.#currentStory = activeSlideClass;
+  async next() {
+    this.#carousel.lock();
+    await this.#exitStory();
+    this.#carousel.next();
+    this.#carousel.lock(); // this is hacky; internal Carousel lock mechs should be refined
+    await this.#enterStory();
+    this.#carousel.unlock();
+  };
 
-      switch(activeSlideClass) {
-        case ".story--age":
-          await this.#startAgeStory();
-          break;
-        default:
-          break;
-      }
-    });
+  previous() {
+    this.#carousel.previous();
+    this.#completeStory();
   }
 
-  async #startAgeStory() {
-    this.#carousel.lock();
-    await this.#buildTimeline((tl) => {
+  async #enterStory() {
+    this.#currentStory = this.#setCurrentStory(this.#carousel.activeSlideClass);
+    if (this.#currentStory) await this.#currentStory.enter();
+  }
+
+  async #exitStory() {
+    if (this.#currentStory) await this.#currentStory.exit();
+  }
+
+  // exclusive for previous navigation;
+  // make it so that text is on screen in a complete state;
+  // distinct from the `endStory()` state
+  #completeStory() {
+    const activeSlideClass = this.#carousel.activeSlideClass;
+
+    switch(activeSlideClass) {
+      case ".story--age":
+        this.#completeAgeStory();
+        break;
+      case ".story--intro":
+        break;
+      default:
+        break;
+    }
+  }
+
+  #buildTimeline(callback) {
+    const tl = gsap.timeline();
+    callback(tl);
+    return tl;
+  };
+
+  async #playTimeline(tl) {
+    if (!tl) return;
+
+    return new Promise((resolve) => {
+      tl.eventCallback("onComplete", resolve);
+      tl.play();
+    });
+  };
+
+  async #enterAgeStory() {
+    const tl = this.#buildTimeline((tl) => {
       tl.fromTo(
         this.#carousel.activeSlide,
         {
@@ -51,26 +115,54 @@ class StoryController {
       }, "<")
       .to({}, { duration: 3})
     });
-    this.#carousel.unlock();
+    await this.#playTimeline(tl);
+  };
+
+  async #exitAgeStory() {
+    const tl = this.#buildTimeline((tl) => {
+      tl.to(".age", {
+        opacity: 0,
+        y: -100,
+        duration: 1,
+        ease: "power3.out",
+      }, ">")
+      .to(".years", {
+        opacity: 0,
+        y: -100,
+        duration: 1.25,
+        ease: "power3.out",
+      }, "<");
+    });
+    await this.#playTimeline(tl);
+  };
+
+  #completeAgeStory() {
+    gsap.set(this.#carousel.activeSlide, {
+      clipPath: "circle(100% at 50% 50%)"
+    });
+
+    gsap.set(".age", {
+      opacity: 1,
+      y: 0
+    });
+
+    gsap.set(".years", {
+      opacity: 1,
+      y: 0
+    });
   }
 
-  #buildTimeline(callback) {
-    if (this.#hasStoryPlayed()) return;
-
-    this.#carousel.activeSlide.setAttribute("data-played-story", "true");
-    const tl = gsap.timeline();
-    callback(tl);
-    return tl;
-  }
-
-  #hasStoryPlayed() {
-    return this.#carousel.activeSlide
-      .getAttribute("data-played-story") === "true" ? true : false;
-  }
-
-  get currentStory() {
-    return this.#currentStory;
-  }
+  #setCurrentStory(currentStoryClass) {
+    const currentStory = this.#stories[currentStoryClass] ?? null;
+    if (currentStory === null) {
+      console.error("Current story is missing -- you probably forgot it Ron!!");
+      return;
+    }
+    if (currentStoryClass !== ".story--present") {
+      this.#carousel.unlockPagination();
+    }
+    return currentStory;
+  };
 }
 
 class Carousel {
@@ -93,59 +185,61 @@ class Carousel {
       },
     });
 
+    // removes Swiper navigation button events but keeps DOM elements
+    this.#swiper.navigation.destroy();
     this.lock(); // lock by default
-  }
+  };
 
   on(event, callback) {
     this.#swiper.on(event, callback);
-  }
+  };
 
   next() {
     this.#swiper.slideNext();
-  }
+  };
 
   previous() {
     this.#swiper.slidePrev();
-  }
+  };
 
   lock() {
     this.#swiper.navigation.nextEl.disabled = true;
     this.#swiper.navigation.prevEl.disabled = true;
-  }
+  };
 
   unlock() {
     this.#swiper.navigation.nextEl.disabled = false;
     this.#swiper.navigation.prevEl.disabled = false;
-  }
+  };
 
   lockPagination() {
     this.pagination.classList.add("lock");
-  }
+  };
 
   unlockPagination() {
     this.pagination.classList.remove("lock");
-  }
+  };
 
   get swiper() {
     return this.#swiper;
-  }
+  };
 
   get nextButton() {
     return this.#swiper.navigation.nextEl;
-  }
+  };
 
   get previousButton() {
     return this.#swiper.navigation.prevEl;
-  }
+  };
 
   get pagination() {
     return this.#swiper.pagination.el;
-  }
+  };
 
   get activeSlide() {
     const slide = this.#swiper.slides[this.#swiper.activeIndex];
     return slide?.querySelector(".story");
-  }
+  };
 
   get activeSlideClass() {
     const slide = this.#swiper.slides[this.#swiper.activeIndex];
@@ -154,22 +248,9 @@ class Carousel {
     const storyClass = klasses?.find((klass) => klass.startsWith("story--"));
 
     return `.${storyClass}`;
-  }
+  };
 }
 
-
 const carousel = new Carousel();
-new StoryController(carousel);
-
-// .to(".age", {
-      //   opacity: 0,
-      //   y: -100,
-      //   duration: 1,
-      //   ease: "power3.out",
-      // }, ">")
-      // .to(".years", {
-      //   opacity: 0,
-      //   y: -100,
-      //   duration: 1.25,
-      //   ease: "power3.out",
-      // }, "<");
+const stories = new StoryController(carousel);
+export { stories };

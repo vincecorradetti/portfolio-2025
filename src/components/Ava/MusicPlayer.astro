@@ -93,8 +93,12 @@
     const audio = document.getElementById("music-player") as HTMLAudioElement;
     if (!slide || !audio) return;
 
-    audio.setAttribute("src", slide.music);
-    audio.play();
+    try {
+      audio.setAttribute("src", slide.music);
+      audio.play();
+    } catch(error) {
+      return;
+    }
   }
 
   initMusicPlayer();

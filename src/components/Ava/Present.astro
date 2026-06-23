@@ -7,6 +7,8 @@
 </section>
 
 <script>
+  import { stories } from "../../scripts/main";
+
   function initPresent() {
     const present = document.getElementById("present");
     
@@ -38,7 +40,7 @@
     changePresentSprite(svg);
     playPresentSound();
     setTimeout(() => {
-      swiper.slideNext();
+      stories.next();
     }, 2000);
   }
 
