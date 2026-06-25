@@ -1,7 +1,10 @@
+// Swiper
 import Swiper from "swiper";
-import "../vendor/tinder-swiper/effect-tinder.css";
-import EffectTinder from "../vendor/tinder-swiper/effect-tinder.esm";
 import { Navigation, Pagination } from "swiper/modules";
+import EffectTinder from "../vendor/tinder-swiper/effect-tinder.esm";
+import "../vendor/tinder-swiper/effect-tinder.css";
+
+// GSAP
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
@@ -72,7 +75,13 @@ class StoryController {
   }
 
   async #exitStory() {
-    if (this.#currentStory) await this.#currentStory.exit();
+    if (!this.#currentStory) return;
+ 
+    await this.#currentStory.exit();
+    await gsap.to(this.#carousel.activeSlide, {
+      opacity: 0,
+      duration: 0.5
+    });
   }
 
   // exclusive for previous navigation;
@@ -109,17 +118,7 @@ class StoryController {
 
   async #enterAgeStory() {
     const tl = this.#buildTimeline((tl) => {
-      tl.fromTo(
-        this.#carousel.activeSlide,
-        {
-          clipPath: "circle(5% at 50% 50%)"
-        },
-        {
-          clipPath: "circle(100% at 50% 50%)",
-          duration: 1,
-          ease: "power4.in"
-        }
-      )
+      tl
       .from(".age", {
         y: 40,
         duration: 1,
@@ -529,7 +528,7 @@ class Carousel {
   constructor(selector, isMain) {
     this.#variant = isMain ? "main" : "hinge";
     this.#swiper = new Swiper(selector, {
-      modules: [Navigation, Pagination, EffectTinder],
+      modules: [Navigation, Pagination,  EffectTinder],
       slidesPerView: 1,
       navigation: {
         prevEl:  `.swiper-button-prev--${this.#variant}`,
@@ -537,6 +536,7 @@ class Carousel {
       },
 
       ...(isMain && {
+        speed: 0,
         noSwiping: true,
         noSwipingClass: "swiper-slide",
         pagination: {
