@@ -1,12 +1,47 @@
+li:has(.story--playlist) {
+  position: relative;
+  background: center / cover no-repeat url("/images/stardew-valley-background.png");
+  background-attachment: fixed;
+
+  &::before {
+    content: "";
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+}
+
 .story--playlist {
   color: var(--color-pink);
 }
 
+.story--playlist h2 {
+  font-size: 4rem;
+
+  & > div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+  }
+}
+
 .story--playlist ol {
+  list-style-type: none;
+}
+
+.story--playlist ol > .group {
   display: flex;
   flex-direction: column;
   gap: 3rem;
-  list-style-type: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(100%, 1400px);
+}
+
+.story--playlist ol > ol:nth-of-type(:even) {
+  margin-left: 10vw;
 }
 
 .story--playlist li figure {
@@ -18,16 +53,6 @@
   @media (max-width: 640px) {
     flex-wrap: wrap;
   }
-}
-
-.story--playlist figure .cherry {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-}
-
-.story--playlist figure .cherry {
-  animation: jump 1.5s infinite;
 }
 
 .story--playlist figcaption {
@@ -95,12 +120,8 @@
   }
 }
 
-.story--playlist h3 {
-  max-width: 40ch;
-  margin-top: 6rem;
-  margin-inline: auto;
-  font-size: 3rem;
-  line-height: 1;
-  text-align: center;
-  color: var(--color-green);
+.story--playlist .help {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 3rem;
 }

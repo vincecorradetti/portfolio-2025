@@ -5,6 +5,7 @@ li:has(.story--age) {
 .story--age {
   display: grid;
   place-content: center;
+  text-align: center;
 
   h1 {
     display: flex;
@@ -23,11 +24,22 @@ li:has(.story--age) {
     font-size: 7vw;
   }
 
+  .nerd, .jokes {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 5rem;
+    font-weight: 600;
+    color: var(--color-yellow-300);
+  }
+
   .decoration--circle {
     position: absolute;
     top: 0;
     left: 0;
     transform: translate(-25%, -25%);
+    color: var(--color-yellow-300);
   }
 
   .decoration--circles {

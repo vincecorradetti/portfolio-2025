@@ -1,6 +1,8 @@
 import Swiper from "swiper";
-import { gsap } from "gsap";
 import { Navigation, Pagination } from "swiper/modules";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+gsap.registerPlugin(ScrollTrigger);
 
 class StoryController {
   #carousel;
@@ -21,6 +23,12 @@ class StoryController {
     ".story--intro": {
       name: "story--intro",
       enter: () => {},
+      exit: () => {},
+      complete: () => {},
+    },
+    ".story--playlist": {
+      name: "story--playlist",
+      enter: () => this.#enterPlaylistStory(),
       exit: () => {},
       complete: () => {},
     }
@@ -102,25 +110,18 @@ class StoryController {
         }
       )
       .from(".age", {
-        opacity: 0.75,
         y: 40,
-        duration: 1,
+        duration: 1.5,
         ease: "power3.in",
       }, "<")
       .from(".years", {
-        opacity: 0.75,
+        opacity: 0,
         y: 30,
         duration: 1.25,
         ease: "power3.in",
       }, "<")
-      .to({}, { duration: 3})
-    });
-    await this.#playTimeline(tl);
-  };
-
-  async #exitAgeStory() {
-    const tl = this.#buildTimeline((tl) => {
-      tl.to(".age", {
+      .to({}, { duration: 2})
+      .to(".age", {
         opacity: 0,
         y: -100,
         duration: 1,
@@ -131,7 +132,59 @@ class StoryController {
         y: -100,
         duration: 1.25,
         ease: "power3.out",
-      }, "<");
+      }, "<")
+      .fromTo(".nerd",
+        {
+          opacity: 0,
+          y: 30,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+        },
+        "<+0.5"
+      )
+      .to({}, { duration: 2})
+      .to(".nerd",
+        {
+          opacity: 0,
+          y: -100,
+        }
+      )
+      .fromTo(".jokes",
+        {
+          opacity: 0,
+          y: 30,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+        },
+        ">"
+      )
+      .to({}, { duration: 2});
+    });
+
+    // keep this outside the timeline so our StoryController isn't waiting
+    gsap.to(".decoration--circle", {
+      rotation: 360,
+      duration: 100,
+      ease: "none",
+      repeat: -1,
+    });
+    await this.#playTimeline(tl);
+  };
+
+  async #exitAgeStory() {
+    const tl = this.#buildTimeline((tl) => {
+      tl.to(".jokes", {
+        opacity: 0,
+        y: -100,
+        duration: 1.25,
+        ease: "power3.out",
+      });
     });
     await this.#playTimeline(tl);
   };
@@ -149,6 +202,159 @@ class StoryController {
     gsap.set(".years", {
       opacity: 1,
       y: 0
+    });
+
+    gsap.set(".nerd", {
+      opacity: 0,
+      y: 0
+    });
+
+    gsap.set(".jokes", {
+      opacity: 0,
+      y: 0
+    });
+  }
+
+  async #enterPlaylistStory() {
+    // this whole method is disgusting but i need to get it done
+    await new Promise(async (resolve) => {
+      gsap.set(".story--playlist ol", { autoAlpha: 0 });
+
+      const initText = async () => {
+        const tl = this.#buildTimeline((tl) => {
+          tl
+          .to({}, { duration: 1 })
+          .fromTo(".title",
+            {
+              y: 40,
+              opacity: 0,
+            },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 1,
+              ease: "power3.out",
+            }
+          )
+          .to(".title", {
+            opacity: 1,
+            duration: 2,
+          })
+          .to(".title", {
+            y: -40,
+            opacity: 0,
+            duration: 1.5,
+            ease: "power3.in",
+          })
+          .fromTo(".subtitle",
+            {
+              y: 40,
+              opacity: 0,
+            },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 1,
+              ease: "power3.out",
+            }
+          )
+          .to(".subtitle", {
+            opacity: 1,
+            duration: 2,
+          })
+          .to(".subtitle", {
+            y: -40,
+            opacity: 0,
+            duration: 1.5,
+            ease: "power3.in",
+          })
+          .fromTo(".drumroll",
+            {
+              y: 40,
+              opacity: 0,
+            },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 1,
+              ease: "power3.out",
+            }
+          )
+          .to(".drumroll", {
+            opacity: 1,
+            duration: 2,
+          })
+          .to({}, { duration: 1 })
+          .to(".drumroll", {
+            y: -40,
+            opacity: 0,
+            duration: 1.5,
+            ease: "power3.in",
+          })
+        });
+
+        await this.#playTimeline(tl);
+      }
+
+      const initCards = async () => {
+        const cards = gsap.utils.toArray(".story--playlist ol .group > li");
+        let stage = 0;
+        const step = 2;
+        let locked = false;
+        const tl = gsap.timeline();
+
+        cards.forEach(card => {
+          gsap.set(card, { autoAlpha: 0 });
+        });
+
+        // initial timeline
+        tl
+        .to(".story--playlist ol",
+          {
+            autoAlpha: 1,
+            duration: 1.5,
+          },
+          ">"
+        )
+        .to(cards.slice(0, 2), {
+          autoAlpha: 1,
+          duration: 0.75,
+          stagger: 0.25
+        });
+
+        function go(direction) {
+          const maxStage = cards.length / step;
+          const nextStage = stage + direction;
+          if (locked || nextStage < 0) return;
+
+          const oldCards = cards.slice(stage * step, stage * step + step);
+          const newCards = cards.slice(nextStage * step, nextStage * step + step);
+          const duration = Math.random() * (1.5 - 0.5) + 0.5;
+          const stagger = Math.random() * (0.5 - 0.25) + 0.25;
+          if (!newCards.length) return;
+          locked = true;
+
+          gsap.timeline({
+            onComplete: () => {
+              stage = nextStage;
+              locked = false;
+
+              // so hacky
+              if (stage + 1 === maxStage) resolve();
+            }
+          })
+          .to(oldCards, { autoAlpha: 0, duration })
+          .to(newCards, { autoAlpha: 1, duration, stagger });
+        }
+
+        window.addEventListener("wheel", (e) => {
+          if (e.deltaY > 0) go(1);
+          if (e.deltaY < 0) go(-1);
+        });
+      }
+      
+      await initText();
+      await initCards();
     });
   }
 
