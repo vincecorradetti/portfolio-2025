@@ -223,20 +223,6 @@ h2 {
   right: 1.5rem;
 }
 
-@keyframes jump {
-  0% {
-    transform: translateY(0%);
-  }
-
-  50% {
-    transform: translateY(-50%);
-  }
-
-  100% {
-    transform: translateY(0%);
-  }
-}
-
 /* Thanks section */
 #thanks-section {
   h2 {
