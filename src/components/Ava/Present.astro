@@ -1,6 +1,14 @@
 <section class="story story--present" aria-labelledby="present-heading">
   <button id="present" data-clicks="0">
-    <svg width="140" height="160" viewBox="0 0 14 16" fill="none" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      class="shake"
+      width="300"
+      height="320"
+      viewBox="0 0 14 16"
+      fill="none"
+      shape-rendering="crispEdges"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <use href="/images/gift.svg#unopened"></use>
     </svg>
   </button>
@@ -12,42 +20,50 @@
     const present = document.getElementById("present");
     
     present?.addEventListener("click", (event) => {
-      const clicks = Number(present.getAttribute("data-clicks"));
       const svg = present.querySelector("svg");
-      const width = Number(svg?.getAttribute("width"));
-      const height = Number(svg?.getAttribute("height"));
+      let clicks = Number(present.getAttribute("data-clicks"));
+      if (!svg || clicks > 3) return;
 
-      if (!svg || !width || !height) {
-        return;
-      } else if (clicks + 1 >= 5) {
-        openPresent(svg);
-        present.setAttribute("disabled", "true");
-        return;
-      } else {
-        svg.setAttribute("width", String(width + 20));
-        svg.setAttribute("height", String(height + 20));
-        present.setAttribute("data-clicks", String(clicks + 1));
-      }
+      clicks = clicks + 1;
+      changePresentSprite(present, svg, clicks);
     });
   }
 
-  function openPresent(svg: SVGSVGElement) {
-    const carousel = document.querySelector(".swiper") as any; // Just shut up TS
-    const swiper = carousel?.swiper;
-    if (!swiper) return;
+  function changePresentSprite(
+    present: HTMLElement,
+    svg: SVGSVGElement,
+    clicks: Number
+  ) {
+    const use = svg.querySelector("use");
+    if (!use) return;
 
-    changePresentSprite(svg);
-    playPresentSound();
-    setTimeout(() => {
-      stories.next();
-    }, 2000);
-  }
+    switch (clicks) {
+      case 1:
+        svg.classList.remove("shake");
+        use.setAttribute("href", "/images/gift.svg#partially-opened");
+        break;
+      case 2:
+        svg.setAttribute("width", "320");
+        svg.setAttribute("height", "340");
+        svg.setAttribute("viewBox", "0 0 14 17");
+        use.setAttribute("href", "/images/gift.svg#mostly-opened");
+        break;
+      case 3:
+        svg.setAttribute("width", "360");
+        svg.setAttribute("height", "380");
+        svg.setAttribute("viewBox", "0 0 14 19");
+        use.setAttribute("href", "/images/gift.svg#opened");
+        playPresentSound();
 
-  function changePresentSprite(svg: SVGSVGElement) {
-    svg.setAttribute("viewBox", "0 0 14 19");
-    svg.setAttribute("width", "220");
-    svg.setAttribute("height", "270");
-    svg.querySelector("use")?.setAttribute("href", "/images/gift.svg#opened");
+        setTimeout(() => {
+          stories.next();
+        }, 4000);
+        break;
+      default:
+        break;
+    }
+
+    present.setAttribute("data-clicks", String(clicks));
   }
 
   function playPresentSound() {

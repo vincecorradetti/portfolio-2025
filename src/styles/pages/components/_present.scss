@@ -10,48 +10,34 @@ li:has(.story--present) {
     background-color: transparent;
     border: none;
     cursor: pointer;
-    animation: 10s infinite jump ease-in-out;
   }
 
   button#present svg {
     pointer-events: none;
   }
 
-  @keyframes jump {
-    0% {
-      transform: translateY(0%);
+  button#present svg.shake {
+    backface-visibility: hidden;
+    transform: translate3d(0, 0, 0);
+    perspective: 1000px;
+    animation: shake 3s 0.82s cubic-bezier(.36,.07,.19,.97) both infinite;
+  }
+
+  @keyframes shake {
+    10%, 90% {
+      transform: translate3d(-1px, 0, 0);
     }
 
-    15% {
-      transform: translateY(-12.5%);
+    20%, 80% {
+      transform: translate3d(2px, 0, 0);
     }
 
-    30% {
-      transform: translateY(0%);
+    30%, 50%, 70% {
+      transform: translate3d(-2px, 0, 0);
     }
 
-    45% {
-      transform: translateY(12.5%);
-    }
-
-    60% {
-      transform: translateY(0%);
-    }
-
-    75% {
-      transform: translateY(-12.5%);
-    }
-
-    90% {
-      transform: translateY(0%);
-    }
-
-    15% {
-      transform: translateY(12.5%);
-    }
-
-    30% {
-      transform: translateY(0%);
+    40%, 60% {
+      transform: translate3d(2px, 0, 0);
     }
   }
 }

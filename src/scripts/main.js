@@ -45,7 +45,6 @@ class StoryController {
   constructor(carousel) {
     this.#carousel = carousel;    
     this.#currentStory = this.#setCurrentStory(this.#carousel.activeSlideClass);
-    console.log(this.#carousel.nextButton)
 
     if (this.#carousel.variant === "main") {
       this.#carousel.nextButton.addEventListener("click", () => this.next());
@@ -123,12 +122,12 @@ class StoryController {
       )
       .from(".age", {
         y: 40,
-        duration: 1.5,
+        duration: 1,
         ease: "power3.in",
       }, "<")
       .from(".years", {
         opacity: 0,
-        y: 30,
+        y: 60,
         duration: 1.25,
         ease: "power3.in",
       }, "<")
