@@ -1,4 +1,6 @@
 import Swiper from "swiper";
+import "../vendor/tinder-swiper/effect-tinder.css";
+import EffectTinder from "../vendor/tinder-swiper/effect-tinder.esm";
 import { Navigation, Pagination } from "swiper/modules";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -31,14 +33,24 @@ class StoryController {
       enter: () => this.#enterPlaylistStory(),
       exit: () => {},
       complete: () => {},
+    },
+    ".story--love-island": {
+      name: "story--love-island",
+      enter: () => this.#enterLoveIslandStory(),
+      exit: () => {},
+      complete: () => {},
     }
   };
 
   constructor(carousel) {
-    this.#carousel = carousel;
-    this.#carousel.nextButton.addEventListener("click", () => this.next());
-    this.#carousel.previousButton.addEventListener("click", () => this.previous());
+    this.#carousel = carousel;    
     this.#currentStory = this.#setCurrentStory(this.#carousel.activeSlideClass);
+    console.log(this.#carousel.nextButton)
+
+    if (this.#carousel.variant === "main") {
+      this.#carousel.nextButton.addEventListener("click", () => this.next());
+      this.#carousel.previousButton.addEventListener("click", () => this.previous());
+    }
   };
 
   async next() {
@@ -358,6 +370,146 @@ class StoryController {
     });
   }
 
+  async #enterLoveIslandStory() {
+    // this whole method is disgusting but i need to get it done
+    await new Promise(async (resolve) => {
+      const initText = async () => {
+        const tl = this.#buildTimeline((tl) => {
+          tl
+          .to({}, { duration: 1 })
+          .fromTo(".title",
+            {
+              y: 40,
+              opacity: 0,
+            },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 1,
+              ease: "power3.out",
+            }
+          )
+          .to(".title", {
+            opacity: 1,
+            duration: 2,
+          })
+          .to(".title", {
+            y: -40,
+            opacity: 0,
+            duration: 1.5,
+            ease: "power3.in",
+          })
+          .fromTo(".subtitle",
+            {
+              y: 40,
+              opacity: 0,
+            },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 1,
+              ease: "power3.out",
+            }
+          )
+          .to(".subtitle", {
+            opacity: 1,
+            duration: 2,
+          })
+          .to(".subtitle", {
+            y: -40,
+            opacity: 0,
+            duration: 1.5,
+            ease: "power3.in",
+          })
+          .fromTo(".oops",
+            {
+              y: 40,
+              opacity: 0,
+            },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 1,
+              ease: "power3.out",
+            }
+          )
+          .to(".oops", {
+            opacity: 1,
+            duration: 2,
+          })
+          .to(".oops", {
+            y: -40,
+            opacity: 0,
+            duration: 1.5,
+            ease: "power3.in",
+          })
+        });
+
+        await this.#playTimeline(tl);
+      }
+
+      const initCards = async () => {
+        const cards = gsap.utils.toArray(".story--playlist ol .group > li");
+        let stage = 0;
+        const step = 2;
+        let locked = false;
+        const tl = gsap.timeline();
+
+        cards.forEach(card => {
+          gsap.set(card, { autoAlpha: 0 });
+        });
+
+        // initial timeline
+        tl
+        .to(".story--playlist ol",
+          {
+            autoAlpha: 1,
+            duration: 1.5,
+          },
+          ">"
+        )
+        .to(cards.slice(0, 2), {
+          autoAlpha: 1,
+          duration: 0.75,
+          stagger: 0.25
+        });
+
+        function go(direction) {
+          const maxStage = cards.length / step;
+          const nextStage = stage + direction;
+          if (locked || nextStage < 0) return;
+
+          const oldCards = cards.slice(stage * step, stage * step + step);
+          const newCards = cards.slice(nextStage * step, nextStage * step + step);
+          const duration = Math.random() * (1.5 - 0.5) + 0.5;
+          const stagger = Math.random() * (0.5 - 0.25) + 0.25;
+          if (!newCards.length) return;
+          locked = true;
+
+          gsap.timeline({
+            onComplete: () => {
+              stage = nextStage;
+              locked = false;
+
+              // so hacky
+              if (stage + 1 === maxStage) resolve();
+            }
+          })
+          .to(oldCards, { autoAlpha: 0, duration })
+          .to(newCards, { autoAlpha: 1, duration, stagger });
+        }
+
+        window.addEventListener("wheel", (e) => {
+          if (e.deltaY > 0) go(1);
+          if (e.deltaY < 0) go(-1);
+        });
+      }
+      
+      // await initText();
+      // await initCards();
+    });
+  }
+
   #setCurrentStory(currentStoryClass) {
     const currentStory = this.#stories[currentStoryClass] ?? null;
     if (currentStory === null) {
@@ -373,27 +525,38 @@ class StoryController {
 
 class Carousel {
   #swiper;
+  #variant;
 
-  constructor() {
-    this.#swiper = new Swiper(".swiper", {
-      modules: [Navigation, Pagination],
+  constructor(selector, isMain) {
+    this.#variant = isMain ? "main" : "hinge";
+    this.#swiper = new Swiper(selector, {
+      modules: [Navigation, Pagination, EffectTinder],
       slidesPerView: 1,
-      noSwiping: true,
-      noSwipingClass: "swiper-slide",
       navigation: {
-        prevEl: ".swiper-button-prev",
-        nextEl: ".swiper-button-next",
+        prevEl:  `.swiper-button-prev--${this.#variant}`,
+        nextEl: `.swiper-button-next--${this.#variant}`,
       },
-      pagination: {
-        el: ".swiper-pagination",
-        type: "bullets",
-        clickable: true,
-      },
+
+      ...(isMain && {
+        noSwiping: true,
+        noSwipingClass: "swiper-slide",
+        pagination: {
+          el: ".swiper-pagination",
+          type: "bullets",
+          clickable: true,
+        },
+      }),
+
+      ...(!isMain && {
+        effect: "tinder",
+      }),
     });
 
     // removes Swiper navigation button events but keeps DOM elements
-    this.#swiper.navigation.destroy();
-    this.lock(); // lock by default
+    if (isMain) {
+      this.#swiper.navigation.destroy();
+      this.lock();
+    }
   };
 
   on(event, callback) {
@@ -442,6 +605,10 @@ class Carousel {
     return this.#swiper.pagination.el;
   };
 
+  get variant() {
+    return this.#variant;
+  }
+
   get activeSlide() {
     const slide = this.#swiper.slides[this.#swiper.activeIndex];
     return slide?.querySelector(".story");
@@ -457,6 +624,7 @@ class Carousel {
   };
 }
 
-const carousel = new Carousel();
-const stories = new StoryController(carousel);
+const hingeCarousel = new Carousel(".swiper--love-island");
+const mainCarousel = new Carousel(".swiper--main", true);
+const stories = new StoryController(mainCarousel);
 export { stories };

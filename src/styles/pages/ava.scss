@@ -3,16 +3,24 @@
 :root {
   --color-yellow: yellow;
   --color-yellow-300: #ffff88;
+  --color-yellow-100: #F2F3AE;
   --color-tan: #eba55d;
   --color-brown: #78310d;
+  --color-pink-900: #b13499;
   --color-pink: #fe4bda;
   --color-pink-300: #ff8be9;
   --color-pink-100: #ce78be;
-  --color-purple: #3600c7;
+  --color-purple: #692860;
   --color-purple-300: #9f73eb;
+  --color-purple-100: #797981;
+  --color-purple-50: #f9f9f9;
   --color-blue: #9dffff;
   --color-green: #acffb9;
   --color-orange: #fe4833;
+  --color-black: #2c2c2c;
+  --color-black-100: #4c4c4c;
+  --ff-hinge: "Hinge";
+  --ff-hinge-display: "Hinge Display";
 }
 
 @font-face {
@@ -21,9 +29,39 @@
 }
 
 @font-face {
-  font-family: "Gotham";
-  font-weight: 400 800;
-  src: url("/fonts/gotham-regular.otf") format("opentype"),
+  font-family: "Hinge";
+  font-weight: 400;
+  src: url("/fonts/modern-regular.otf") format("opentype"),
+}
+
+@font-face {
+  font-family: "Hinge";
+  font-weight: 500 800;
+  src: url("/fonts/modern-medium.otf") format("opentype"),
+}
+
+@font-face {
+  font-family: "Hinge";
+  font-weight: 600 800;
+  src: url("/fonts/modern-bold.otf") format("opentype"),
+}
+
+@font-face {
+  font-family: "Hinge Display";
+  font-weight: 500;
+  src: url("/fonts/tiempos-medium.otf") format("opentype"),
+}
+
+@font-face {
+  font-family: "Hinge Display";
+  font-weight: 700;
+  src: url("/fonts/tiempos-semibold.otf") format("opentype"),
+}
+
+@font-face {
+  font-family: "Hinge Display";
+  font-weight: 800;
+  src: url("/fonts/tiempos-bold.otf") format("opentype"),
 }
 
 * {
@@ -64,7 +102,7 @@ li:has(.story) {
   height: 100%;
 }
 
-:is(.swiper-button-prev, .swiper-button-next) {
+.swiper-button-prev--main, .swiper-button-next--main {
   width: 12.5% !important;
   height: 100% !important;
   margin-top: 0 !important;
@@ -81,11 +119,11 @@ li:has(.story) {
   }
 }
 
-.swiper-button-prev {
+.swiper-button-prev--main {
   left: 0 !important;
 }
 
-.swiper-button-next {
+.swiper-button-next--main {
   right: 0 !important;
 }
 
@@ -114,7 +152,6 @@ main, .section-divider {
 }
 
 h1, h2 {
-  margin-bottom: 3rem;
   line-height: 0.75;
   text-align: center;
 }
