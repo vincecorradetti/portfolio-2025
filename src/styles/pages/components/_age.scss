@@ -17,20 +17,23 @@ li:has(.story--age) {
   }
 
   h1 > .age {
+    font-family: var(--ff-stardew);
     font-size: 40vw;
   }
 
   h1 > .years {
-    font-size: 7vw;
+    font-size: 5vw;
   }
 
-  .nerd, .jokes {
+  .nerd, .jokes, .embarrassed {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 5rem;
+    max-width: 800px;
+    font-family: var(--ff-spotify);
+    font-size: 4rem;
     font-weight: 600;
+    line-height: 1.125;
     color: var(--color-yellow-300);
   }
 

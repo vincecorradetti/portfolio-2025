@@ -1,0 +1,127 @@
+li:has(.story--recap) {
+  background: var(--color-yellow-300);
+}
+
+.story--recap {
+  display: grid;
+  place-content: center;
+  text-align: center;
+
+  h2 {
+    font-size: 4rem;
+    font-weight: 600;
+    color: var(--color-purple);
+
+    & > div {
+      max-width: 800px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      line-height: 1.125;
+    }
+  }
+
+  .recap {
+    font-family: var(--ff-spotify);
+    color: var(--color-black);
+
+    ol {
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+      list-style-type: none;
+
+      li {
+        font-size: 1.75rem;
+        font-weight: 500;
+      }
+    }
+
+    :is(.stats, .meta) {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+
+    :is(.stats, .meta) > div {
+      text-align: left;
+    }
+
+    .title {
+      margin-block: 1rem 0.25rem;
+      font-size: 1.75rem;
+    }
+
+    .number {
+      display: inline-block;
+      width: 1ch;
+      margin-right: 0.5rem;
+      text-align: center;
+    }
+
+    .special {
+      position: relative;
+
+      &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        width: 75%;
+        background-color: var(--color-green);
+        opacity: 0.25;
+        z-index: -1;
+      }
+    }
+
+    .images {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .images > img {
+      border-radius: 3rem;
+      box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    }
+
+    .couple {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .meta {
+      margin-top: 1rem;
+    }
+
+    .meta .stat {
+      font-weight: 500;
+    }
+  }
+
+  .decoration--circle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-25%, -25%);
+    color: var(--color-purple);
+  }
+
+  .decoration--circles {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    width: fit-content;
+    transform: translate(0, 25%) rotate(45deg);
+    z-index: -1;
+  }
+}

@@ -15,12 +15,16 @@ li:has(.story--love-island) {
 
   h2 {
     font-size: 4rem;
+    font-weight: 600;
+    color: var(--color-yellow-300);
 
     & > div {
+      max-width: 800px;
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);
+      width: 100%;
+      line-height: 1.125;
     }
   }
 
@@ -142,7 +146,7 @@ li:has(.story--love-island) {
     .prompt-response {
       font-family: var(--ff-hinge-display);
       font-weight: 700;
-      line-height: 1.25;
+      line-height: 1.125;
     }
 
     .reactions {

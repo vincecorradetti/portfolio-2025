@@ -27,12 +27,21 @@
     {
       element: ".story--playlist",
       music: "/sounds/katy-song.mp3",
+    },
+    {
+      element: ".story--love-island",
+      music: "/sounds/i-do-not-care-for-the-winter-sun.mp3",
+    },
+    {
+      element: ".story--recap",
+      music: "/sounds/half-right.mp3",
     }
   ];
 
   function initMusicPlayer() {
     initMusicPlayerButton();
     initSlideObserver(); // watch for slide changes and play slide song
+    playSlideMusic(".story--present"); // play initial music on load
   }
 
   function initSlideObserver() {
@@ -106,37 +115,4 @@
   }
 
   initMusicPlayer();
-  /*
-  ====
-  Old music player logic
-  ====
-  function initMusicPlayer() {
-    const SONGS = [
-      "/sounds/what-did-you-see.mp3",
-      "/sounds/i-do-not-care-for-the-winter-sun.mp3",
-    ];
-    let currentSongIndex = 0;
-    const player = document.getElementById("music-player");
-    const audio = player?.querySelector("audio");
-    const button = player?.querySelector("button");
-    if (!audio || !button) return;
-
-    button.addEventListener("click", (event) => {
-      const isPlaying = audio.getAttribute("data-playing") === "" ? true : false;
-
-      if (isPlaying) {
-        audio.pause();
-      } else {
-        audio.play();
-      }
-      audio.toggleAttribute("data-playing");
-    });
-
-    audio.addEventListener("ended", (event) => {
-      const nextSongIndex = currentSongIndex === SONGS.length - 1 ? 0 : currentSongIndex++;
-      audio.setAttribute("src", SONGS[nextSongIndex]);
-      audio.play();
-    });
-  };
-  **/
 </script>

@@ -19,8 +19,10 @@
   --color-orange: #fe4833;
   --color-black: #2c2c2c;
   --color-black-100: #4c4c4c;
+  --ff-stardew: "Stardew Valley";
   --ff-hinge: "Hinge";
   --ff-hinge-display: "Hinge Display";
+  --ff-spotify: "Spotify";
 }
 
 @font-face {
@@ -64,6 +66,25 @@
   src: url("/fonts/tiempos-bold.otf") format("opentype"),
 }
 
+@font-face {
+  font-family: "Spotify";
+  font-weight: 400;
+  src: url("/fonts/spotify-regular.woff2") format("woff2"),
+}
+
+@font-face {
+  font-family: "Spotify";
+  font-weight: 500;
+  src: url("/fonts/spotify-medium.woff2") format("woff2"),
+}
+
+
+@font-face {
+  font-family: "Spotify";
+  font-weight: 600 800;
+  src: url("/fonts/spotify-bold.woff2") format("woff2"),
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -85,6 +106,10 @@ body {
   background-size: cover;
 }
 
+h1, h2 {
+  font-family: var(--ff-spotify);
+}
+
 body:has(.swiper-slide-active > .story--age) {
   background-color: black;
 }
@@ -103,7 +128,7 @@ li:has(.story) {
 }
 
 .swiper-button-prev--main, .swiper-button-next--main {
-  width: 12.5% !important;
+  width: 20% !important;
   height: 100% !important;
   margin-top: 0 !important;
   transform: translate(0, -50%) !important;
@@ -121,10 +146,15 @@ li:has(.story) {
 
 .swiper-button-prev--main {
   left: 0 !important;
+  pointer-events: none; // disable previous button for now
 }
 
 .swiper-button-next--main {
   right: 0 !important;
+
+  &:not([disabled]) {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.15) 100%);
+  }
 }
 
 .swiper-pagination {
@@ -221,29 +251,6 @@ h2 {
   position: absolute;
   bottom: 1.5rem;
   right: 1.5rem;
-}
-
-/* Thanks section */
-#thanks-section {
-  h2 {
-    max-width: 40ch;
-    margin-inline: auto;
-    font-size: 3rem;
-    line-height: 0.9;
-  }
-  
-  .section-divider--hearts {
-    gap: 1rem;
-    margin-block: 2.5rem;
-
-    &:first-of-type {
-      margin-top: 10rem;
-    }
-
-    &:last-of-type {
-      margin-bottom: 10rem;
-    }
-  } 
 }
 
 /* Utility classes */

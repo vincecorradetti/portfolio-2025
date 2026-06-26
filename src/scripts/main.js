@@ -14,35 +14,35 @@ class StoryController {
   #currentStory;
   #stories = {
     ".story--present": {
-      name: "story--present",
+      name: ".story--present",
       enter: () => {},
       exit: () => {},
       complete: () => {},
     },
     ".story--age": {
-      name: "story--age",
+      name: ".story--age",
       enter: () => this.#enterAgeStory(),
       exit: () => this.#exitAgeStory(),
       complete: () => this.#completeAgeStory(),
     },
-    ".story--intro": {
-      name: "story--intro",
-      enter: () => {},
-      exit: () => {},
+    ".story--love-island": {
+      name: ".story--love-island",
+      enter: () => this.#enterLoveIslandStory(),
+      exit: () => this.#exitLoveIslandStory(),
       complete: () => {},
     },
     ".story--playlist": {
-      name: "story--playlist",
+      name: ".story--playlist",
       enter: () => this.#enterPlaylistStory(),
+      exit: () => this.#exitPlaylistStory(),
+      complete: () => {},
+    },
+    ".story--recap": {
+      name: ".story--recap",
+      enter: () => this.#enterRecapStory(),
       exit: () => {},
       complete: () => {},
     },
-    ".story--love-island": {
-      name: "story--love-island",
-      enter: () => this.#enterLoveIslandStory(),
-      exit: () => {},
-      complete: () => {},
-    }
   };
 
   constructor(carousel) {
@@ -71,7 +71,9 @@ class StoryController {
 
   async #enterStory() {
     this.#currentStory = this.#setCurrentStory(this.#carousel.activeSlideClass);
-    if (this.#currentStory) await this.#currentStory.enter();
+    if (this.#currentStory) {
+      await this.#currentStory.enter();
+    }
   }
 
   async #exitStory() {
@@ -117,33 +119,40 @@ class StoryController {
   };
 
   async #enterAgeStory() {
+    const scope = this.#currentStory.name;
+    gsap.set([`${scope} .nerd`, `${scope} .jokes`, `${scope} .embarrassed`], {
+      xPercent: -50,
+      yPercent: -50,
+    });
+
     const tl = this.#buildTimeline((tl) => {
       tl
-      .from(".age", {
-        y: 40,
-        duration: 1,
-        ease: "power3.in",
-      }, "<")
-      .from(".years", {
-        opacity: 0,
-        y: 60,
-        duration: 1.25,
-        ease: "power3.in",
-      }, "<")
-      .to({}, { duration: 2})
-      .to(".age", {
+      // .fromTo(`${scope}`,
+      //   {
+      //     y: 40,
+      //     autoAlpha: 0,
+      //   },
+      //   {
+      //     y: 0,
+      //     autoAlpha: 1,
+      //     duration: 1.5,
+      //     ease: "power3.out",
+      //   }
+      // )
+      .to(`${scope} .age`, {
         opacity: 0,
         y: -100,
         duration: 1,
         ease: "power3.out",
       }, ">")
-      .to(".years", {
+      .to({}, { duration: 1 })
+      .to(`${scope} .age`, {
         opacity: 0,
         y: -100,
-        duration: 1.25,
+        duration: 1,
         ease: "power3.out",
-      }, "<")
-      .fromTo(".nerd",
+      }, ">")
+      .fromTo(`${scope} .nerd`,
         {
           opacity: 0,
           y: 30,
@@ -152,17 +161,18 @@ class StoryController {
           opacity: 1,
           y: 0,
           duration: 1,
+          ease: "power3.out",
         },
         "<+0.5"
       )
-      .to({}, { duration: 2})
-      .to(".nerd",
-        {
-          opacity: 0,
-          y: -100,
-        }
-      )
-      .fromTo(".jokes",
+      .to({}, { duration: 2 })
+      .to(`${scope} .nerd`, {
+        opacity: 0,
+        y: -100,
+        duration: 1,
+        ease: "power3.out",
+      })
+      .fromTo(`${scope} .jokes`,
         {
           opacity: 0,
           y: 30,
@@ -171,10 +181,31 @@ class StoryController {
           opacity: 1,
           y: 0,
           duration: 1,
+          ease: "power3.out",
+        },
+        "<+0.5"
+      )
+      .to({}, { duration: 2 })
+      .to(`${scope} .jokes`, {
+        opacity: 0,
+        y: -100,
+        duration: 1,
+        ease: "power3.out",
+      })
+      .fromTo(`${scope} .embarrassed`,
+        {
+          opacity: 0,
+          y: 30,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: "power3.out",
         },
         ">"
       )
-      .to({}, { duration: 2});
+      .to({}, { duration: 2 });
     });
 
     // keep this outside the timeline so our StoryController isn't waiting
@@ -188,53 +219,70 @@ class StoryController {
   };
 
   async #exitAgeStory() {
-    const tl = this.#buildTimeline((tl) => {
-      tl.to(".jokes", {
-        opacity: 0,
-        y: -100,
-        duration: 1.25,
-        ease: "power3.out",
-      });
-    });
-    await this.#playTimeline(tl);
+    const scope = this.#currentStory.name;
+
+    // const tl = this.#buildTimeline((tl) => {
+    //   tl.to(`${scope} .jokes`, {
+    //     opacity: 0,
+    //     y: -100,
+    //     duration: 1.25,
+    //     ease: "power3.out",
+    //   });
+    // });
+    // await this.#playTimeline(tl);
   };
 
   #completeAgeStory() {
-    gsap.set(this.#carousel.activeSlide, {
-      clipPath: "circle(100% at 50% 50%)"
-    });
+    const scope = this.#currentStory.name;
 
-    gsap.set(".age", {
+    gsap.set(`${scope} .age`, {
       opacity: 1,
       y: 0
     });
 
-    gsap.set(".years", {
+    gsap.set(`${scope} .years`, {
       opacity: 1,
       y: 0
     });
 
-    gsap.set(".nerd", {
+    gsap.set(`${scope} .nerd`, {
       opacity: 0,
       y: 0
     });
 
-    gsap.set(".jokes", {
+    gsap.set(`${scope} .jokes`, {
       opacity: 0,
       y: 0
     });
   }
 
   async #enterPlaylistStory() {
+    const scope = this.#currentStory.name;
+    gsap.set(`${scope} h2 > div`, {
+      xPercent: -50,
+      yPercent: -50,
+    });
+
     // this whole method is disgusting but i need to get it done
     await new Promise(async (resolve) => {
-      gsap.set(".story--playlist ol", { autoAlpha: 0 });
+      gsap.set(`${scope} ol`, { autoAlpha: 0 });
 
       const initText = async () => {
         const tl = this.#buildTimeline((tl) => {
           tl
-          .to({}, { duration: 1 })
-          .fromTo(".title",
+          // .fromTo(`${scope}`,
+          //   {
+          //     y: 40,
+          //     autoAlpha: 0,
+          //   },
+          //   {
+          //     y: 0,
+          //     autoAlpha: 1,
+          //     duration: 1.5,
+          //     ease: "power3.out",
+          //   }
+          // )
+          .fromTo(`${scope} .title`,
             {
               y: 40,
               opacity: 0,
@@ -246,17 +294,17 @@ class StoryController {
               ease: "power3.out",
             }
           )
-          .to(".title", {
+          .to(`${scope} .title`, {
             opacity: 1,
             duration: 2,
           })
-          .to(".title", {
+          .to(`${scope} .title`, {
             y: -40,
             opacity: 0,
             duration: 1.5,
             ease: "power3.in",
           })
-          .fromTo(".subtitle",
+          .fromTo(`${scope} .subtitle`,
             {
               y: 40,
               opacity: 0,
@@ -268,17 +316,17 @@ class StoryController {
               ease: "power3.out",
             }
           )
-          .to(".subtitle", {
+          .to(`${scope} .subtitle`, {
             opacity: 1,
             duration: 2,
           })
-          .to(".subtitle", {
+          .to(`${scope} .subtitle`, {
             y: -40,
             opacity: 0,
             duration: 1.5,
             ease: "power3.in",
           })
-          .fromTo(".drumroll",
+          .fromTo(`${scope} .drumroll`,
             {
               y: 40,
               opacity: 0,
@@ -290,12 +338,12 @@ class StoryController {
               ease: "power3.out",
             }
           )
-          .to(".drumroll", {
+          .to(`${scope} .drumroll`, {
             opacity: 1,
             duration: 2,
           })
           .to({}, { duration: 1 })
-          .to(".drumroll", {
+          .to(`${scope} .drumroll`, {
             y: -40,
             opacity: 0,
             duration: 1.5,
@@ -307,7 +355,7 @@ class StoryController {
       }
 
       const initCards = async () => {
-        const cards = gsap.utils.toArray(".story--playlist ol .group > li");
+        const cards = gsap.utils.toArray(`${scope} ol .group > li`);
         let stage = 0;
         const step = 2;
         let locked = false;
@@ -319,7 +367,7 @@ class StoryController {
 
         // initial timeline
         tl
-        .to(".story--playlist ol",
+        .to(`${scope} ol`,
           {
             autoAlpha: 1,
             duration: 1.5,
@@ -368,144 +416,315 @@ class StoryController {
     });
   }
 
+  async #exitPlaylistStory() {
+    const scope = this.#currentStory.name;
+    // const tl = this.#buildTimeline((tl) => {
+    //   tl.to(`${scope}`, {
+    //     y: -40,
+    //     autoAlpha: 0,
+    //     duration: 1.5,
+    //     ease: "power3.in",
+    //   });
+    // });
+
+    // await this.#playTimeline(tl);
+  }
+
   async #enterLoveIslandStory() {
+    const scope = this.#currentStory.name;
+
     // this whole method is disgusting but i need to get it done
     await new Promise(async (resolve) => {
-      const initText = async () => {
-        const tl = this.#buildTimeline((tl) => {
-          tl
-          .to({}, { duration: 1 })
-          .fromTo(".title",
-            {
-              y: 40,
-              opacity: 0,
-            },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 1,
-              ease: "power3.out",
-            }
-          )
-          .to(".title", {
-            opacity: 1,
-            duration: 2,
-          })
-          .to(".title", {
-            y: -40,
-            opacity: 0,
-            duration: 1.5,
-            ease: "power3.in",
-          })
-          .fromTo(".subtitle",
-            {
-              y: 40,
-              opacity: 0,
-            },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 1,
-              ease: "power3.out",
-            }
-          )
-          .to(".subtitle", {
-            opacity: 1,
-            duration: 2,
-          })
-          .to(".subtitle", {
-            y: -40,
-            opacity: 0,
-            duration: 1.5,
-            ease: "power3.in",
-          })
-          .fromTo(".oops",
-            {
-              y: 40,
-              opacity: 0,
-            },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 1,
-              ease: "power3.out",
-            }
-          )
-          .to(".oops", {
-            opacity: 1,
-            duration: 2,
-          })
-          .to(".oops", {
-            y: -40,
-            opacity: 0,
-            duration: 1.5,
-            ease: "power3.in",
-          })
-        });
+      gsap.set([`${scope} .title`, `${scope} .subtitle`, `${scope} .couple`], {
+        xPercent: -50,
+        yPercent: -50,
+      });
 
-        await this.#playTimeline(tl);
-      }
+      gsap.set(".swiper--love-island", {
+        autoAlpha: 0,
+      });
 
-      const initCards = async () => {
-        const cards = gsap.utils.toArray(".story--playlist ol .group > li");
-        let stage = 0;
-        const step = 2;
-        let locked = false;
-        const tl = gsap.timeline();
-
-        cards.forEach(card => {
-          gsap.set(card, { autoAlpha: 0 });
-        });
-
-        // initial timeline
+      const tl = this.#buildTimeline((tl) => {
         tl
-        .to(".story--playlist ol",
+        // .fromTo(`${scope}`,
+        //   {
+        //     y: 40,
+        //     autoAlpha: 0,
+        //   },
+        //   {
+        //     y: 0,
+        //     autoAlpha: 1,
+        //     duration: 1.5,
+        //     ease: "power3.out",
+        //   }
+        // )
+        .fromTo(`${scope} .title`,
           {
-            autoAlpha: 1,
-            duration: 1.5,
+            y: 40,
+            opacity: 0,
+          },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: "power3.out",
+          }
+        )
+        .to(`${scope} .title`, {
+          opacity: 1,
+          duration: 2,
+        })
+        .to(`${scope} .title`, {
+          y: -40,
+          opacity: 0,
+          duration: 1.5,
+          ease: "power3.in",
+        })
+        .fromTo(`${scope} .subtitle`,
+          {
+            y: 40,
+            opacity: 0,
+          },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: "power3.out",
+          }
+        )
+        .to(`${scope} .subtitle`, {
+          opacity: 1,
+          duration: 2,
+        })
+        .to(`${scope} .subtitle`, {
+          y: -40,
+          opacity: 0,
+          duration: 1.5,
+          ease: "power3.in",
+        })
+        .fromTo(`${scope} .couple`,
+          {
+            y: 40,
+            opacity: 0,
+          },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: "power3.out",
+          }
+        )
+        .to(`${scope} .couple`, {
+          opacity: 1,
+          duration: 2,
+        })
+        .to(`${scope} .couple`, {
+          y: -40,
+          opacity: 0,
+          duration: 1.5,
+          ease: "power3.in",
+        })
+        .to(".swiper--love-island", {
+          autoAlpha: 1,
+        })
+      });
+
+      await this.#playTimeline(tl);
+    });
+  }
+
+  async #exitLoveIslandStory() {
+    const scope = this.#currentStory.name;
+    // const tl = this.#buildTimeline((tl) => {
+    //   tl.to(`${scope}`, {
+    //     y: -40,
+    //     autoAlpha: 0,
+    //     duration: 1.5,
+    //     ease: "power3.in",
+    //   });
+    // });
+
+    // await this.#playTimeline(tl);
+  }
+
+  async #enterRecapStory() {
+    const scope = this.#currentStory.name;
+
+    gsap.set([`${scope} .serious`, `${scope} .wanted-to-say`, `${scope} .birthday`, `${scope} .us`], {
+      xPercent: -50,
+      yPercent: -50,
+    });
+    gsap.set(".recap li", {
+      opacity: 0,
+      y: 40,
+    });
+    gsap.set(".recap img", {
+      opacity: 0,
+      y: 40,
+    });
+
+    const rows = [];
+    for (let i = 1; i <= 5; i++) {
+      rows.push(
+        document.querySelector(`.recap .stats .dates li:nth-child(${i})`),
+        document.querySelector(`.recap .stats .songs li:nth-child(${i})`)
+      );
+    }
+
+    const tl = this.#buildTimeline((tl) => {
+      tl
+        .to({}, { duration: 1 })
+        .fromTo(`${scope} .serious`,
+          {
+            y: 40,
+            opacity: 0,
+          },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: "power3.out",
+          }
+        )
+        .to(`${scope} .serious`, {
+          opacity: 1,
+          duration: 2,
+        })
+        .to(`${scope} .serious`, {
+          y: -40,
+          opacity: 0,
+          duration: 1.5,
+          ease: "power3.in",
+        })
+        .fromTo(`${scope} .wanted-to-say`,
+          {
+            y: 40,
+            opacity: 0,
+          },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: "power3.out",
+          }
+        )
+        .to(`${scope} .wanted-to-say`, {
+          opacity: 1,
+          duration: 2,
+        })
+        .to(`${scope} .wanted-to-say`, {
+          y: -40,
+          opacity: 0,
+          duration: 1.5,
+          ease: "power3.in",
+        })
+        .fromTo(`${scope} .birthday`,
+          {
+            y: 40,
+            opacity: 0,
+          },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: "power3.out",
+          }
+        )
+        .to(`${scope} .birthday`, {
+          opacity: 1,
+          duration: 2,
+        })
+        .to({}, { duration: 1 })
+        .to(`${scope} .birthday`, {
+          y: -40,
+          opacity: 0,
+          duration: 1.5,
+          ease: "power3.in",
+        })
+        .fromTo(`${scope} .us`,
+          {
+            y: 40,
+            opacity: 0,
+          },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: "power3.out",
+          }
+        )
+        .to(`${scope} .us`, {
+          opacity: 1,
+          duration: 2,
+        })
+        .to({}, { duration: 1 })
+        .to(`${scope} .us`, {
+          y: -40,
+          opacity: 0,
+          duration: 1.5,
+          ease: "power3.in",
+        })
+        .to({}, { duration: 1 })
+        .fromTo(".recap img",
+          {
+            opacity: 0,
+            y: 40,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: "power3.out",
+            stagger: 0.125,
           },
           ">"
         )
-        .to(cards.slice(0, 2), {
-          autoAlpha: 1,
-          duration: 0.75,
-          stagger: 0.25
-        });
-
-        function go(direction) {
-          const maxStage = cards.length / step;
-          const nextStage = stage + direction;
-          if (locked || nextStage < 0) return;
-
-          const oldCards = cards.slice(stage * step, stage * step + step);
-          const newCards = cards.slice(nextStage * step, nextStage * step + step);
-          const duration = Math.random() * (1.5 - 0.5) + 0.5;
-          const stagger = Math.random() * (0.5 - 0.25) + 0.25;
-          if (!newCards.length) return;
-          locked = true;
-
-          gsap.timeline({
-            onComplete: () => {
-              stage = nextStage;
-              locked = false;
-
-              // so hacky
-              if (stage + 1 === maxStage) resolve();
-            }
-          })
-          .to(oldCards, { autoAlpha: 0, duration })
-          .to(newCards, { autoAlpha: 1, duration, stagger });
-        }
-
-        window.addEventListener("wheel", (e) => {
-          if (e.deltaY > 0) go(1);
-          if (e.deltaY < 0) go(-1);
-        });
-      }
-      
-      // await initText();
-      // await initCards();
+        .fromTo(".recap .stats .title",
+          {
+            opacity: 0,
+            y: 40,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: "power3.out",
+            stagger: 0.125,
+          },
+          "<+0.25"
+        )
+        .fromTo(rows,
+          {
+            opacity: 0,
+            y: 40,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: "power3.out",
+            stagger: 0.125,
+          },
+          "<+0.5"
+        )
+        .fromTo(".recap .meta > div",
+          {
+            opacity: 0,
+            y: 40,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: "power3.out",
+            stagger: 0.125,
+          },
+          ">"
+        )
+        .to({}, { duration: 2 });
     });
+
+    await this.#playTimeline(tl);
   }
 
   #setCurrentStory(currentStoryClass) {
@@ -588,6 +807,10 @@ class Carousel {
     this.pagination.classList.remove("lock");
   };
 
+  onReachEnd(callback) {
+    this.#swiper.on("reachEnd", callback);
+  }
+
   get swiper() {
     return this.#swiper;
   };
@@ -626,4 +849,7 @@ class Carousel {
 const hingeCarousel = new Carousel(".swiper--love-island");
 const mainCarousel = new Carousel(".swiper--main", true);
 const stories = new StoryController(mainCarousel);
+hingeCarousel.onReachEnd(() => {
+  mainCarousel.unlock();
+});
 export { stories };
