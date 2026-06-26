@@ -1,5 +1,5 @@
 <aside>
-  <audio src="/songs/i-do-not-care-for-the-winter-sun.mp3" id="music-player" loop></audio>
+  <audio src="/songs/menu.mp3" id="music-player" muted autoplay loop></audio>
   <button data-playing="true">
     <img
       src="/images/stardew-valley-music--on.webp"
@@ -39,6 +39,9 @@
   ];
 
   function initMusicPlayer() {
+    const player = document.getElementById("music-player") as HTMLAudioElement;
+    player.muted = false; // chrome won't autoplay unless you add `muted` then programatically remove it...
+
     initMusicPlayerButton();
     initSlideObserver(); // watch for slide changes and play slide song
     playSlideMusic(".story--present"); // play initial music on load
