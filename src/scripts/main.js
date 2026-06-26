@@ -17,31 +17,26 @@ class StoryController {
       name: ".story--present",
       enter: () => {},
       exit: () => {},
-      complete: () => {},
     },
     ".story--age": {
       name: ".story--age",
       enter: () => this.#enterAgeStory(),
       exit: () => this.#exitAgeStory(),
-      complete: () => this.#completeAgeStory(),
     },
     ".story--love-island": {
       name: ".story--love-island",
       enter: () => this.#enterLoveIslandStory(),
       exit: () => this.#exitLoveIslandStory(),
-      complete: () => {},
     },
     ".story--playlist": {
       name: ".story--playlist",
       enter: () => this.#enterPlaylistStory(),
       exit: () => this.#exitPlaylistStory(),
-      complete: () => {},
     },
     ".story--recap": {
       name: ".story--recap",
       enter: () => this.#enterRecapStory(),
       exit: () => {},
-      complete: () => {},
     },
   };
 
@@ -66,14 +61,11 @@ class StoryController {
 
   previous() {
     this.#carousel.previous();
-    this.#completeStory();
   }
 
   async #enterStory() {
     this.#currentStory = this.#setCurrentStory(this.#carousel.activeSlideClass);
-    if (this.#currentStory) {
-      await this.#currentStory.enter();
-    }
+    if (this.#currentStory) await this.#currentStory.enter();
   }
 
   async #exitStory() {
@@ -84,23 +76,6 @@ class StoryController {
       opacity: 0,
       duration: 0.5
     });
-  }
-
-  // exclusive for previous navigation;
-  // make it so that text is on screen in a complete state;
-  // distinct from the `endStory()` state
-  #completeStory() {
-    const activeSlideClass = this.#carousel.activeSlideClass;
-
-    switch(activeSlideClass) {
-      case ".story--age":
-        this.#completeAgeStory();
-        break;
-      case ".story--intro":
-        break;
-      default:
-        break;
-    }
   }
 
   #buildTimeline(callback) {
@@ -120,92 +95,40 @@ class StoryController {
 
   async #enterAgeStory() {
     const scope = this.#currentStory.name;
-    gsap.set([`${scope} .nerd`, `${scope} .jokes`, `${scope} .embarrassed`], {
-      xPercent: -50,
-      yPercent: -50,
-    });
+    gsap.set(
+      [
+        `${scope} .age`,
+        `${scope} .joke`,
+        `${scope} .sorry`,
+        `${scope} .embarrassed`,
+      ],
+      {
+        y: 40,
+        opacity: 0,
+        xPercent: -50,
+        yPercent: -50,
+      }
+    );
 
     const tl = this.#buildTimeline((tl) => {
       tl
-      // .fromTo(`${scope}`,
-      //   {
-      //     y: 40,
-      //     autoAlpha: 0,
-      //   },
-      //   {
-      //     y: 0,
-      //     autoAlpha: 1,
-      //     duration: 1.5,
-      //     ease: "power3.out",
-      //   }
-      // )
-      .to(`${scope} .age`, {
-        opacity: 0,
-        y: -100,
-        duration: 1,
-        ease: "power3.out",
-      }, ">")
+      .fromTo(`${scope}`,
+        {
+          y: 40,
+          autoAlpha: 0,
+        },
+        {
+          y: 0,
+          autoAlpha: 1,
+          duration: 1,
+          ease: "power3.out",
+        }
+      )
+      .call(() => this.#addTextAnimation(tl, `${scope} .age`))
       .to({}, { duration: 1 })
-      .to(`${scope} .age`, {
-        opacity: 0,
-        y: -100,
-        duration: 1,
-        ease: "power3.out",
-      }, ">")
-      .fromTo(`${scope} .nerd`,
-        {
-          opacity: 0,
-          y: 30,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: "power3.out",
-        },
-        "<+0.5"
-      )
-      .to({}, { duration: 2 })
-      .to(`${scope} .nerd`, {
-        opacity: 0,
-        y: -100,
-        duration: 1,
-        ease: "power3.out",
-      })
-      .fromTo(`${scope} .jokes`,
-        {
-          opacity: 0,
-          y: 30,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: "power3.out",
-        },
-        "<+0.5"
-      )
-      .to({}, { duration: 2 })
-      .to(`${scope} .jokes`, {
-        opacity: 0,
-        y: -100,
-        duration: 1,
-        ease: "power3.out",
-      })
-      .fromTo(`${scope} .embarrassed`,
-        {
-          opacity: 0,
-          y: 30,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: "power3.out",
-        },
-        ">"
-      )
-      .to({}, { duration: 2 });
+      .call(() => this.#addTextAnimation(tl, `${scope} .joke`))
+      .call(() => this.#addTextAnimation(tl, `${scope} .sorry`))
+      .call(() => this.#addTextAnimation(tl, `${scope} .embarrassed`, { exit: false }))
     });
 
     // keep this outside the timeline so our StoryController isn't waiting
@@ -220,135 +143,54 @@ class StoryController {
 
   async #exitAgeStory() {
     const scope = this.#currentStory.name;
-
-    // const tl = this.#buildTimeline((tl) => {
-    //   tl.to(`${scope} .jokes`, {
-    //     opacity: 0,
-    //     y: -100,
-    //     duration: 1.25,
-    //     ease: "power3.out",
-    //   });
-    // });
-    // await this.#playTimeline(tl);
+    const tl = this.#buildTimeline((tl) => {
+      tl.to(`${scope}`, {
+        y: -40,
+        autoAlpha: 0,
+        duration: 1,
+        ease: "power3.in",
+      });
+    });
+    await this.#playTimeline(tl);
   };
-
-  #completeAgeStory() {
-    const scope = this.#currentStory.name;
-
-    gsap.set(`${scope} .age`, {
-      opacity: 1,
-      y: 0
-    });
-
-    gsap.set(`${scope} .years`, {
-      opacity: 1,
-      y: 0
-    });
-
-    gsap.set(`${scope} .nerd`, {
-      opacity: 0,
-      y: 0
-    });
-
-    gsap.set(`${scope} .jokes`, {
-      opacity: 0,
-      y: 0
-    });
-  }
 
   async #enterPlaylistStory() {
     const scope = this.#currentStory.name;
-    gsap.set(`${scope} h2 > div`, {
-      xPercent: -50,
-      yPercent: -50,
-    });
+    gsap.set(
+      [
+        `${scope} .title`,
+        `${scope} .subtitle`,
+        `${scope} .drumroll`,
+      ],
+      {
+        y: 40,
+        opacity: 0,
+        xPercent: -50,
+        yPercent: -50,
+      }
+    );
+    gsap.set(`${scope} ol`, { autoAlpha: 0 });
 
     // this whole method is disgusting but i need to get it done
     await new Promise(async (resolve) => {
-      gsap.set(`${scope} ol`, { autoAlpha: 0 });
-
       const initText = async () => {
         const tl = this.#buildTimeline((tl) => {
           tl
-          // .fromTo(`${scope}`,
-          //   {
-          //     y: 40,
-          //     autoAlpha: 0,
-          //   },
-          //   {
-          //     y: 0,
-          //     autoAlpha: 1,
-          //     duration: 1.5,
-          //     ease: "power3.out",
-          //   }
-          // )
-          .fromTo(`${scope} .title`,
+          .fromTo(`${scope} .story-inner`,
             {
               y: 40,
-              opacity: 0,
+              autoAlpha: 0,
             },
             {
               y: 0,
-              opacity: 1,
+              autoAlpha: 1,
               duration: 1,
               ease: "power3.out",
             }
           )
-          .to(`${scope} .title`, {
-            opacity: 1,
-            duration: 2,
-          })
-          .to(`${scope} .title`, {
-            y: -40,
-            opacity: 0,
-            duration: 1.5,
-            ease: "power3.in",
-          })
-          .fromTo(`${scope} .subtitle`,
-            {
-              y: 40,
-              opacity: 0,
-            },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 1,
-              ease: "power3.out",
-            }
-          )
-          .to(`${scope} .subtitle`, {
-            opacity: 1,
-            duration: 2,
-          })
-          .to(`${scope} .subtitle`, {
-            y: -40,
-            opacity: 0,
-            duration: 1.5,
-            ease: "power3.in",
-          })
-          .fromTo(`${scope} .drumroll`,
-            {
-              y: 40,
-              opacity: 0,
-            },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 1,
-              ease: "power3.out",
-            }
-          )
-          .to(`${scope} .drumroll`, {
-            opacity: 1,
-            duration: 2,
-          })
-          .to({}, { duration: 1 })
-          .to(`${scope} .drumroll`, {
-            y: -40,
-            opacity: 0,
-            duration: 1.5,
-            ease: "power3.in",
-          })
+          .call(() => this.#addTextAnimation(tl, `${scope} .title`))
+          .call(() => this.#addTextAnimation(tl, `${scope} .subtitle`))
+          .call(() => this.#addTextAnimation(tl, `${scope} .drumroll`))
         });
 
         await this.#playTimeline(tl);
@@ -370,7 +212,7 @@ class StoryController {
         .to(`${scope} ol`,
           {
             autoAlpha: 1,
-            duration: 1.5,
+            duration: 1,
           },
           ">"
         )
@@ -387,7 +229,7 @@ class StoryController {
 
           const oldCards = cards.slice(stage * step, stage * step + step);
           const newCards = cards.slice(nextStage * step, nextStage * step + step);
-          const duration = Math.random() * (1.5 - 0.5) + 0.5;
+          const duration = Math.random() * (1 - 0.5) + 0.5;
           const stagger = Math.random() * (0.5 - 0.25) + 0.25;
           if (!newCards.length) return;
           locked = true;
@@ -418,115 +260,55 @@ class StoryController {
 
   async #exitPlaylistStory() {
     const scope = this.#currentStory.name;
-    // const tl = this.#buildTimeline((tl) => {
-    //   tl.to(`${scope}`, {
-    //     y: -40,
-    //     autoAlpha: 0,
-    //     duration: 1.5,
-    //     ease: "power3.in",
-    //   });
-    // });
-
-    // await this.#playTimeline(tl);
+    const tl = this.#buildTimeline((tl) => {
+      tl.to(`${scope}`, {
+        y: -40,
+        autoAlpha: 0,
+        duration: 1,
+        ease: "power3.in",
+      });
+    });
+    await this.#playTimeline(tl);
   }
 
   async #enterLoveIslandStory() {
     const scope = this.#currentStory.name;
-
-    // this whole method is disgusting but i need to get it done
-    await new Promise(async (resolve) => {
-      gsap.set([`${scope} .title`, `${scope} .subtitle`, `${scope} .couple`], {
+    gsap.set(
+      [
+        `${scope} .title`,
+        `${scope} .subtitle`,
+        `${scope} .couple`,
+      ],
+      {
+        y: 40,
+        opacity: 0,
         xPercent: -50,
         yPercent: -50,
-      });
+      }
+    );
+    gsap.set(`${scope} .swiper--love-island`, {
+      autoAlpha: 0,
+    });
 
-      gsap.set(".swiper--love-island", {
-        autoAlpha: 0,
-      });
-
+    await new Promise(async (resolve) => {
       const tl = this.#buildTimeline((tl) => {
         tl
-        // .fromTo(`${scope}`,
-        //   {
-        //     y: 40,
-        //     autoAlpha: 0,
-        //   },
-        //   {
-        //     y: 0,
-        //     autoAlpha: 1,
-        //     duration: 1.5,
-        //     ease: "power3.out",
-        //   }
-        // )
-        .fromTo(`${scope} .title`,
+        .fromTo(`${scope}`,
           {
             y: 40,
-            opacity: 0,
+            autoAlpha: 0,
           },
           {
             y: 0,
-            opacity: 1,
-            duration: 1,
+            autoAlpha: 1,
+            duration: 1.5,
             ease: "power3.out",
           }
         )
-        .to(`${scope} .title`, {
-          opacity: 1,
-          duration: 2,
-        })
-        .to(`${scope} .title`, {
-          y: -40,
-          opacity: 0,
-          duration: 1.5,
-          ease: "power3.in",
-        })
-        .fromTo(`${scope} .subtitle`,
-          {
-            y: 40,
-            opacity: 0,
-          },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 1,
-            ease: "power3.out",
-          }
-        )
-        .to(`${scope} .subtitle`, {
-          opacity: 1,
-          duration: 2,
-        })
-        .to(`${scope} .subtitle`, {
-          y: -40,
-          opacity: 0,
-          duration: 1.5,
-          ease: "power3.in",
-        })
-        .fromTo(`${scope} .couple`,
-          {
-            y: 40,
-            opacity: 0,
-          },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 1,
-            ease: "power3.out",
-          }
-        )
-        .to(`${scope} .couple`, {
-          opacity: 1,
-          duration: 2,
-        })
-        .to(`${scope} .couple`, {
-          y: -40,
-          opacity: 0,
-          duration: 1.5,
-          ease: "power3.in",
-        })
-        .to(".swiper--love-island", {
-          autoAlpha: 1,
-        })
+        .add(this.#addTextAnimation(tl, `${scope} .title`))
+        .add(this.#addTextAnimation(tl, `${scope} .subtitle`))
+        .add(this.#addTextAnimation(tl, `${scope} .couple`))
+        .to(`${scope} .swiper--love-island`, { autoAlpha: 1 });
       });
 
       await this.#playTimeline(tl);
@@ -535,25 +317,34 @@ class StoryController {
 
   async #exitLoveIslandStory() {
     const scope = this.#currentStory.name;
-    // const tl = this.#buildTimeline((tl) => {
-    //   tl.to(`${scope}`, {
-    //     y: -40,
-    //     autoAlpha: 0,
-    //     duration: 1.5,
-    //     ease: "power3.in",
-    //   });
-    // });
-
-    // await this.#playTimeline(tl);
+    const tl = this.#buildTimeline((tl) => {
+      tl.to(`${scope}`, {
+        y: -40,
+        autoAlpha: 0,
+        duration: 1.5,
+        ease: "power3.in",
+      });
+    });
+    await this.#playTimeline(tl);
   }
 
   async #enterRecapStory() {
+    const rows = [];
     const scope = this.#currentStory.name;
-
-    gsap.set([`${scope} .serious`, `${scope} .wanted-to-say`, `${scope} .birthday`, `${scope} .us`], {
-      xPercent: -50,
-      yPercent: -50,
-    });
+    gsap.set(
+      [
+        `${scope} .serious`,
+        `${scope} .wanted-to-say`,
+        `${scope} .birthday`,
+        `${scope} .us`,
+      ],
+      {
+        y: 40,
+        opacity: 0,
+        xPercent: -50,
+        yPercent: -50,
+      }
+    );
     gsap.set(".recap li", {
       opacity: 0,
       y: 40,
@@ -563,7 +354,6 @@ class StoryController {
       y: 40,
     });
 
-    const rows = [];
     for (let i = 1; i <= 5; i++) {
       rows.push(
         document.querySelector(`.recap .stats .dates li:nth-child(${i})`),
@@ -573,98 +363,22 @@ class StoryController {
 
     const tl = this.#buildTimeline((tl) => {
       tl
-        .to({}, { duration: 1 })
-        .fromTo(`${scope} .serious`,
+        .fromTo(`${scope}`,
           {
             y: 40,
-            opacity: 0,
+            autoAlpha: 0,
           },
           {
             y: 0,
-            opacity: 1,
+            autoAlpha: 1,
             duration: 1,
             ease: "power3.out",
           }
         )
-        .to(`${scope} .serious`, {
-          opacity: 1,
-          duration: 2,
-        })
-        .to(`${scope} .serious`, {
-          y: -40,
-          opacity: 0,
-          duration: 1.5,
-          ease: "power3.in",
-        })
-        .fromTo(`${scope} .wanted-to-say`,
-          {
-            y: 40,
-            opacity: 0,
-          },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 1,
-            ease: "power3.out",
-          }
-        )
-        .to(`${scope} .wanted-to-say`, {
-          opacity: 1,
-          duration: 2,
-        })
-        .to(`${scope} .wanted-to-say`, {
-          y: -40,
-          opacity: 0,
-          duration: 1.5,
-          ease: "power3.in",
-        })
-        .fromTo(`${scope} .birthday`,
-          {
-            y: 40,
-            opacity: 0,
-          },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 1,
-            ease: "power3.out",
-          }
-        )
-        .to(`${scope} .birthday`, {
-          opacity: 1,
-          duration: 2,
-        })
-        .to({}, { duration: 1 })
-        .to(`${scope} .birthday`, {
-          y: -40,
-          opacity: 0,
-          duration: 1.5,
-          ease: "power3.in",
-        })
-        .fromTo(`${scope} .us`,
-          {
-            y: 40,
-            opacity: 0,
-          },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 1,
-            ease: "power3.out",
-          }
-        )
-        .to(`${scope} .us`, {
-          opacity: 1,
-          duration: 2,
-        })
-        .to({}, { duration: 1 })
-        .to(`${scope} .us`, {
-          y: -40,
-          opacity: 0,
-          duration: 1.5,
-          ease: "power3.in",
-        })
-        .to({}, { duration: 1 })
+        .add(this.#addTextAnimation(tl, `${scope} .serious`))
+        .add(this.#addTextAnimation(tl, `${scope} .wanted-to-say`))
+        .add(this.#addTextAnimation(tl, `${scope} .birthday`))
+        .add(this.#addTextAnimation(tl, `${scope} .us`))
         .fromTo(".recap img",
           {
             opacity: 0,
@@ -721,10 +435,48 @@ class StoryController {
           },
           ">"
         )
-        .to({}, { duration: 2 });
     });
 
     await this.#playTimeline(tl);
+  }
+
+  #addTextAnimation(tl, selector, options = {}) {
+    const {
+      hold = 2,
+      enterDuration = 1,
+      exitDuration = 1.5,
+      position = ">",
+      exit = true,
+    } = options;
+
+    tl
+    .fromTo(
+      selector,
+      {
+        y: 40,
+        opacity: 0,
+      },
+      {
+        y: 0,
+        opacity: 1,
+        duration: enterDuration,
+        ease: "power3.out",
+      },
+      position
+    )
+    .to(selector, {
+      opacity: 1,
+      duration: hold,
+    });
+      
+    exit && tl.to(selector, {
+      y: -40,
+      opacity: 0,
+      duration: exitDuration,
+      ease: "power3.in",
+    });
+
+    return tl;
   }
 
   #setCurrentStory(currentStoryClass) {
